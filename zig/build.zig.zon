@@ -1,0 +1,12 @@
+.{
+    .name = .herdr_vt_smoke,
+    .version = "0.0.0",
+    .minimum_zig_version = "0.15.2",
+    .fingerprint = 0xa6c682cf8e0b85d,
+    .paths = .{""},
+    .dependencies = .{
+        // Vendored libghostty-vt source tree. Its build.zig exposes the
+        // native Zig module "ghostty-vt" (see src/build/GhosttyZig.zig).
+        .ghostty = .{ .path = "../vendor/libghostty-vt" },
+    },
+}
