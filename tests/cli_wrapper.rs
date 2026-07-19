@@ -173,7 +173,7 @@ fn spawn_named_server(
     )
     .unwrap();
 
-    let mut command = Command::new(env!("CARGO_BIN_EXE_herdr"));
+    let mut command = Command::new(support::herdr_test_binary());
     command
         .args(["--session", session, "server"])
         .env("XDG_CONFIG_HOME", config_home)
@@ -219,7 +219,7 @@ fn run_named_cli_with_env_and_socket_override(
     envs: &[(&str, &Path)],
     socket_override: Option<&Path>,
 ) -> std::process::Output {
-    let mut command = Command::new(env!("CARGO_BIN_EXE_herdr"));
+    let mut command = Command::new(support::herdr_test_binary());
     command
         .args(args)
         .env("XDG_CONFIG_HOME", config_home)
@@ -290,7 +290,7 @@ fn spawn_herdr_with_config(
         })
         .unwrap();
 
-    let mut cmd = CommandBuilder::new(env!("CARGO_BIN_EXE_herdr"));
+    let mut cmd = CommandBuilder::new(support::herdr_test_binary());
     cmd.arg("server");
     cmd.env("XDG_CONFIG_HOME", config_home);
     cmd.env("XDG_RUNTIME_DIR", runtime_dir);
@@ -311,14 +311,14 @@ fn spawn_herdr_with_config(
 }
 
 fn run_cli(socket_path: &Path, args: &[&str]) -> std::process::Output {
-    let mut command = Command::new(env!("CARGO_BIN_EXE_herdr"));
+    let mut command = Command::new(support::herdr_test_binary());
     command.args(args);
     command.env("HERDR_SOCKET_PATH", socket_path);
     command.output().unwrap()
 }
 
 fn run_cli_in_dir(socket_path: &Path, args: &[&str], current_dir: &Path) -> std::process::Output {
-    let mut command = Command::new(env!("CARGO_BIN_EXE_herdr"));
+    let mut command = Command::new(support::herdr_test_binary());
     command.args(args);
     command.current_dir(current_dir);
     command.env("HERDR_SOCKET_PATH", socket_path);
@@ -1160,7 +1160,7 @@ fn help_commands_exit_successfully() {
     ];
 
     for args in help_cases {
-        let output = Command::new(env!("CARGO_BIN_EXE_herdr"))
+        let output = Command::new(support::herdr_test_binary())
             .args(*args)
             .output()
             .unwrap();
@@ -1177,7 +1177,7 @@ fn help_commands_exit_successfully() {
 
 #[test]
 fn completion_command_prints_zsh_script_without_session_startup() {
-    let output = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let output = Command::new(support::herdr_test_binary())
         .args(["completion", "zsh"])
         .env_remove("HERDR_SOCKET_PATH")
         .env_remove("HERDR_CLIENT_SOCKET_PATH")
@@ -1217,7 +1217,7 @@ fn completion_command_prints_zsh_script_without_session_startup() {
 
 #[test]
 fn root_help_hides_explicit_client_command() {
-    let output = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let output = Command::new(support::herdr_test_binary())
         .arg("--help")
         .output()
         .unwrap();
@@ -1232,7 +1232,7 @@ fn root_help_hides_explicit_client_command() {
 
 #[test]
 fn root_help_advertises_api_schema_command_group() {
-    let output = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let output = Command::new(support::herdr_test_binary())
         .arg("--help")
         .output()
         .unwrap();
@@ -1247,7 +1247,7 @@ fn root_help_advertises_api_schema_command_group() {
 
 #[test]
 fn api_schema_default_output_is_a_short_summary() {
-    let output = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let output = Command::new(support::herdr_test_binary())
         .args(["api", "schema"])
         .output()
         .unwrap();
@@ -1267,7 +1267,7 @@ fn api_schema_default_output_is_a_short_summary() {
 
 #[test]
 fn api_schema_json_prints_bundled_schema() {
-    let output = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let output = Command::new(support::herdr_test_binary())
         .args(["api", "schema", "--json"])
         .output()
         .unwrap();
@@ -1328,7 +1328,7 @@ fn api_schema_output_writes_bundled_schema_to_file() {
     fs::create_dir_all(&base).unwrap();
     let schema_path = base.join("herdr-api.schema.json");
 
-    let output = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let output = Command::new(support::herdr_test_binary())
         .args(["api", "schema", "--output"])
         .arg(&schema_path)
         .output()
@@ -1355,7 +1355,7 @@ fn explicit_client_command_respects_nested_guard() {
     let base = unique_test_dir();
     fs::create_dir_all(&base).unwrap();
 
-    let output = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let output = Command::new(support::herdr_test_binary())
         .arg("client")
         .env("HERDR_ENV", "1")
         .env("XDG_CONFIG_HOME", &base)
@@ -1375,7 +1375,7 @@ fn explicit_client_command_respects_nested_guard() {
 
 #[test]
 fn removed_show_changelog_flag_fails_before_nested_guard() {
-    let output = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let output = Command::new(support::herdr_test_binary())
         .arg("--show-changelog")
         .env("HERDR_ENV", "1")
         .output()
@@ -1595,7 +1595,7 @@ fn integration_commands_run_locally_when_server_is_missing() {
         "test setup should start without extension file"
     );
 
-    let workspace_list = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let workspace_list = Command::new(support::herdr_test_binary())
         .args(["workspace", "list"])
         .env("HERDR_SOCKET_PATH", &missing_socket)
         .env("HOME", &home_dir)
@@ -1603,7 +1603,7 @@ fn integration_commands_run_locally_when_server_is_missing() {
         .unwrap();
     assert_eq!(workspace_list.status.code(), Some(1));
 
-    let integration_install = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let integration_install = Command::new(support::herdr_test_binary())
         .args(["integration", "install", "pi"])
         .env("HERDR_SOCKET_PATH", &missing_socket)
         .env("HOME", &home_dir)
@@ -1615,7 +1615,7 @@ fn integration_commands_run_locally_when_server_is_missing() {
         "integration install should write local files without a server"
     );
 
-    let integration_status = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let integration_status = Command::new(support::herdr_test_binary())
         .args(["integration", "status"])
         .env("HERDR_SOCKET_PATH", &missing_socket)
         .env("HOME", &home_dir)
@@ -1626,7 +1626,7 @@ fn integration_commands_run_locally_when_server_is_missing() {
     assert!(status_stdout.contains("pi: current (v6)"));
     assert!(status_stdout.contains("claude: not installed"));
 
-    let integration_uninstall = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let integration_uninstall = Command::new(support::herdr_test_binary())
         .args(["integration", "uninstall", "pi"])
         .env("HERDR_SOCKET_PATH", &missing_socket)
         .env("HOME", &home_dir)
@@ -1658,7 +1658,7 @@ fn integration_status_outdated_only_prints_action_for_legacy_install() {
     register_runtime_dir(&runtime_dir);
     let missing_socket = runtime_dir.join("missing.sock");
 
-    let output = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let output = Command::new(support::herdr_test_binary())
         .args(["integration", "status", "--outdated-only"])
         .env("HERDR_SOCKET_PATH", &missing_socket)
         .env("HOME", &home_dir)
@@ -1684,7 +1684,7 @@ fn integration_status_rejects_unknown_flags() {
     register_runtime_dir(&runtime_dir);
     let missing_socket = runtime_dir.join("missing.sock");
 
-    let output = Command::new(env!("CARGO_BIN_EXE_herdr"))
+    let output = Command::new(support::herdr_test_binary())
         .args(["integration", "status", "--wat"])
         .env("HERDR_SOCKET_PATH", &missing_socket)
         .env("HOME", &home_dir)
@@ -2743,9 +2743,9 @@ fn agent_start_command_works() {
         format!(
             "#!/bin/sh\nprintf '%s\\n' \"$@\" > '{}'\nexport HERDR_AGENT=pi\n'{}' pane report-agent \"$HERDR_PANE_ID\" --source custom:fake-pi --agent pi --state idle >/dev/null\nwhile IFS= read -r prompt; do\n  [ \"$prompt\" = \"do not transition\" ] && continue\n  '{}' pane report-agent \"$HERDR_PANE_ID\" --source custom:fake-pi --agent pi --state working >/dev/null\n  '{}' pane report-agent \"$HERDR_PANE_ID\" --source custom:fake-pi --agent pi --state idle >/dev/null\ndone\n",
             captured_args.display(),
-            env!("CARGO_BIN_EXE_herdr"),
-            env!("CARGO_BIN_EXE_herdr"),
-            env!("CARGO_BIN_EXE_herdr"),
+            support::herdr_test_binary().display(),
+            support::herdr_test_binary().display(),
+            support::herdr_test_binary().display(),
         ),
     )
     .unwrap();

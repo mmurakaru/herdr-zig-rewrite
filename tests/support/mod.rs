@@ -17,6 +17,18 @@ const WATCHDOG_SCAN_INTERVAL: Duration = Duration::from_secs(1);
 const RUNTIME_OWNER_MARKER: &str = ".herdr-test-owner-pid";
 pub const CURRENT_PROTOCOL: u32 = 17;
 
+/// Resolves the herdr binary the integration suite spawns.
+///
+/// `HERDR_TEST_BIN` overrides the cargo-built binary so the suite can run as a
+/// parity oracle against an externally built herdr (for example the Zig
+/// rewrite). When the variable is unset, the cargo-built test binary is used.
+pub fn herdr_test_binary() -> PathBuf {
+    match std::env::var_os("HERDR_TEST_BIN") {
+        Some(override_path) => PathBuf::from(override_path),
+        None => PathBuf::from(env!("CARGO_BIN_EXE_herdr")),
+    }
+}
+
 pub fn register_spawned_herdr_pid(pid: Option<u32>) {
     let Some(pid) = pid else {
         return;
@@ -606,6 +618,11 @@ fn current_checkout_root() -> &'static Path {
 }
 
 fn is_test_herdr_binary(path: &Path) -> bool {
+    if let Some(override_path) = std::env::var_os("HERDR_TEST_BIN") {
+        if path == Path::new(&override_path) {
+            return true;
+        }
+    }
     path.ends_with("target/debug/herdr") && path.starts_with(current_checkout_root())
 }
 
