@@ -822,7 +822,7 @@ fi
     script.push_str(
         r#"if [ -n "$home" ]; then
     emit "$home/.local/share/mise/installs/herdr/$version/bin/herdr"
-    emit "$home/.local/share/mise/installs/github-ogulcancelik-herdr/$version/herdr"
+    emit "$home/.local/share/mise/installs/github-example-owner-herdr/$version/herdr"
     emit "$home/.nix-profile/bin/herdr"
 fi
 if [ -n "$user" ]; then
@@ -2520,7 +2520,7 @@ mod tests {
             script.contains("emit \"$home/.local/share/mise/installs/herdr/$version/bin/herdr\"")
         );
         assert!(script.contains(
-            "emit \"$home/.local/share/mise/installs/github-ogulcancelik-herdr/$version/herdr\""
+            "emit \"$home/.local/share/mise/installs/github-example-owner-herdr/$version/herdr\""
         ));
         assert!(script.contains("emit \"$home/.nix-profile/bin/herdr\""));
         assert!(script.contains("emit \"/etc/profiles/per-user/$user/bin/herdr\""));

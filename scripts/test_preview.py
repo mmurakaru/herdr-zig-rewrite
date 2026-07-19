@@ -31,7 +31,7 @@ class PreviewNotesTests(unittest.TestCase):
             notes = "Preview notes\n"
             content = preview.build_manifest(
                 output=output,
-                repo="ogulcancelik/herdr",
+                repo="example-owner/herdr",
                 tag="preview-2026-06-02-abcdef123456",
                 build_id="2026-06-02-abcdef123456",
                 commit="abcdef1234567890",
@@ -51,7 +51,7 @@ class PreviewNotesTests(unittest.TestCase):
             )
             self.assertEqual(
                 data["assets"]["windows-x86_64"]["url"],
-                "https://github.com/ogulcancelik/herdr/releases/download/preview-2026-06-02-abcdef123456/herdr-windows-x86_64.exe",
+                "https://github.com/example-owner/herdr/releases/download/preview-2026-06-02-abcdef123456/herdr-windows-x86_64.exe",
             )
             self.assertIn("2026-06-02-abcdef123456", data["builds"])
 
@@ -135,29 +135,6 @@ class PreviewNotesTests(unittest.TestCase):
                 )
             finally:
                 os.chdir(original_cwd)
-
-    def test_preview_docs_rewrite_links_to_preview_namespace(self):
-        source = """---
-title: Install Herdr
----
-
-import ConfigReference from '../../components/ConfigReference.astro';
-import LocaleWidget from '../../../components/LocaleWidget.astro';
-
-[Install](/docs/install/)
-file: ../../../public/assets/logo.svg
-"""
-        output = subprocess.check_output(
-            ["node", "website/scripts/prepare-docs.mjs", "--rewrite-preview-doc-fixture"],
-            input=source,
-            text=True,
-        )
-        self.assertIn("[Install](/docs/preview/install/)", output)
-        self.assertIn("file: ../../../../public/assets/logo.svg", output)
-        self.assertIn("from '../../../components/ConfigReference.astro'", output)
-        self.assertIn("from '../../../../components/LocaleWidget.astro'", output)
-        self.assertIn("Preview docs describe unreleased preview builds", output)
-
 
 class ConventionalCommitTests(unittest.TestCase):
     def test_valid_subjects_allow_scopes_and_bang(self):

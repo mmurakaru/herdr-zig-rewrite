@@ -8,7 +8,7 @@ load a bare conpty.dll from PATH. portable-pty's sideload probe is intentional
 for WezTerm's bundled OpenConsole.exe/conpty.dll pair, but Herdr does not ship
 that pair.
 
-Herdr issue: https://github.com/ogulcancelik/herdr/issues/761
+Herdr issue: https://github.com/example-owner/herdr/issues/761
 Vendored base: portable-pty 0.9.0
 ---
  vendor/portable-pty/src/win/psuedocon.rs | 9 +--------

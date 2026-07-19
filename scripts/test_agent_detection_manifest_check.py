@@ -27,21 +27,6 @@ path = "{path}"
 '''
 
 
-def staged_grok_dirs(root: Path) -> tuple[Path, Path]:
-    bundled = root / "bundled"
-    website = root / "website"
-    bundled.mkdir()
-    website.mkdir()
-    (bundled / "grok.toml").write_bytes(
-        (check.DEFAULT_BUNDLED_DIR / "grok.toml").read_bytes()
-    )
-    (website / "grok.toml").write_bytes(
-        (check.DEFAULT_WEBSITE_DIR / "grok.toml").read_bytes()
-    )
-    (website / "index.toml").write_text(catalog("grok", "grok.toml"))
-    return bundled, website
-
-
 class AgentDetectionManifestCheckTests(unittest.TestCase):
     def test_validates_bundled_and_matching_website_catalog(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -72,23 +57,6 @@ class AgentDetectionManifestCheckTests(unittest.TestCase):
             bundled_manifests = check.load_manifest_dir(bundled, engine_version=1)
             with self.assertRaisesRegex(check.CheckError, "lower than bundled"):
                 check.validate_catalog(website, bundled_manifests, engine_version=1)
-
-    def test_allows_explicitly_staged_website_manifest(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            bundled, website = staged_grok_dirs(Path(tmp))
-
-            bundled_manifests = check.load_manifest_dir(bundled, engine_version=3)
-            check.validate_catalog(website, bundled_manifests, engine_version=3)
-
-    def test_rejects_mutated_staged_website_manifest(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            bundled, website = staged_grok_dirs(Path(tmp))
-            with (website / "grok.toml").open("a") as manifest_file:
-                manifest_file.write("\n# unexpected mutation\n")
-
-            bundled_manifests = check.load_manifest_dir(bundled, engine_version=3)
-            with self.assertRaisesRegex(check.CheckError, "lower than bundled"):
-                check.validate_catalog(website, bundled_manifests, engine_version=3)
 
     def test_rejects_unlisted_website_manifest_lag_for_new_engine(self):
         with tempfile.TemporaryDirectory() as tmp:

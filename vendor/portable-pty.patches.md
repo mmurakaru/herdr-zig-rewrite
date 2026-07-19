@@ -10,7 +10,7 @@ status: active
 
 patch: `vendor/patches/portable-pty/0001-force-system-conpty.patch`
 
-herdr issue: https://github.com/ogulcancelik/herdr/issues/761
+herdr issue: https://github.com/example-owner/herdr/issues/761
 
 upstream discussion: none found
 
@@ -46,7 +46,7 @@ status: active
 
 patch: `vendor/patches/portable-pty/0002-windows-raw-command-tail.patch`
 
-herdr issue: https://github.com/ogulcancelik/herdr/issues/1041
+herdr issue: https://github.com/example-owner/herdr/issues/1041
 
 upstream discussion: none
 
